@@ -1,0 +1,653 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no, viewport-fit=cover">
+    <title>Хоккей Дуэль | Идеальные размеры | Адаптив</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            user-select: none;
+            -webkit-tap-highlight-color: transparent;
+        }
+
+        body {
+            background: #0a2f2a;
+            min-height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            font-family: system-ui, 'Segoe UI', sans-serif;
+            touch-action: none;
+            overflow: hidden;
+            position: fixed;
+            width: 100%;
+            height: 100%;
+        }
+
+        /* МЕНЮ (адаптивное) */
+        .menu-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: #071f1be6;
+            backdrop-filter: blur(12px);
+            z-index: 100;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            padding: 16px;
+        }
+
+        .menu-card {
+            background: #0d2e27;
+            border-radius: 48px;
+            padding: 24px 20px;
+            width: 100%;
+            max-width: 340px;
+            text-align: center;
+            box-shadow: 0 20px 40px rgba(0,0,0,0.5);
+            border: 1px solid #ffd96666;
+        }
+
+        .menu-title {
+            font-size: 1.8rem;
+            font-weight: 800;
+            color: #ffecb3;
+            margin-bottom: 12px;
+        }
+
+        .coins {
+            background: #00000066;
+            border-radius: 60px;
+            padding: 6px 16px;
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            margin-bottom: 20px;
+            font-weight: bold;
+            font-size: 1.3rem;
+            color: #ffd966;
+        }
+
+        .mode-btn {
+            background: #ffcd7e;
+            border: none;
+            font-size: 1rem;
+            font-weight: bold;
+            padding: 10px 16px;
+            border-radius: 60px;
+            margin: 6px 0;
+            width: 100%;
+            color: #1f3d36;
+            box-shadow: 0 3px 0 #a05e15;
+            transition: 0.05s linear;
+            cursor: pointer;
+        }
+
+        .mode-btn:active { transform: translateY(2px); box-shadow: 0 1px 0 #a05e15; }
+
+        .difficulty {
+            display: flex;
+            gap: 8px;
+            margin: 12px 0;
+        }
+        .difficulty button {
+            flex: 1;
+            background: #3f7b6b;
+            color: white;
+            border: none;
+            padding: 8px 4px;
+            border-radius: 40px;
+            font-weight: bold;
+            font-size: 0.8rem;
+        }
+        .difficulty .active-diff { background: #ffb347; color: #1f3d36; box-shadow: inset 0 0 0 2px #fff2c9; }
+
+        .back-btn { background: #5f5f5f; box-shadow: 0 3px 0 #2a2a2a; margin-top: 12px; }
+
+        /* ИГРОВОЙ ЭКРАН */
+        .game-wrapper {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            width: 100%;
+            height: 100%;
+            background: #0a1f1a;
+            padding: 8px;
+        }
+
+        .game-card {
+            background: #0d2e27;
+            border-radius: 28px;
+            padding: 10px;
+            box-shadow: 0 20px 35px rgba(0,0,0,0.5);
+            width: 100%;
+            max-width: 100%;
+        }
+
+        canvas {
+            display: block;
+            margin: 0 auto;
+            background: #1b4d3e;
+            border-radius: 24px;
+            width: 100%;
+            height: auto;
+            touch-action: none;
+        }
+
+        .score-panel {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 10px;
+            gap: 8px;
+            background: #071f1bdd;
+            border-radius: 60px;
+            padding: 5px 12px;
+        }
+
+        .score-box {
+            text-align: center;
+            background: #00000066;
+            padding: 2px 8px;
+            border-radius: 40px;
+            min-width: 55px;
+        }
+        .score-value { font-size: 1.4rem; font-weight: 800; color: #fff2c9; line-height: 1.2; }
+        .score-label { font-size: 0.5rem; color: #b9f6e6; }
+
+        .round-info {
+            background: #000000aa;
+            padding: 3px 10px;
+            border-radius: 40px;
+            font-weight: bold;
+            color: #ffd966;
+            font-size: 0.65rem;
+            white-space: nowrap;
+        }
+
+        .reset-btn {
+            background: #ffcd7e;
+            border: none;
+            font-size: 0.7rem;
+            padding: 5px 12px;
+            border-radius: 40px;
+            font-weight: bold;
+            cursor: pointer;
+            white-space: nowrap;
+        }
+
+        .instruction {
+            margin-top: 8px;
+            font-size: 0.55rem;
+            color: #b9f6e6;
+            text-align: center;
+            background: #071f1b99;
+            border-radius: 40px;
+            padding: 4px 8px;
+        }
+
+        @media (orientation: portrait) { .orientation-warning { display: flex; } }
+        .orientation-warning { display: none; position: fixed; top:0; left:0; width:100%; height:100%; background:#000000dd; z-index:200; justify-content:center; align-items:center; color:white; font-size:1rem; flex-direction:column; gap:12px; text-align:center; padding:20px; }
+    </style>
+</head>
+<body>
+<div class="orientation-warning" id="orientWarn">🔄 Поверните телефон горизонтально<br>для игры вдвоём</div>
+<div class="menu-overlay" id="menuOverlay">
+    <div class="menu-card">
+        <div class="menu-title">🏒 ХОККЕЙ ДУЭЛЬ 🏒</div>
+        <div class="coins" id="coinDisplay">🪙 0</div>
+        <button class="mode-btn" data-mode="pvp">👥 ИГРОК 1 vs ИГРОК 2</button>
+        <button class="mode-btn" data-mode="pve">🤖 ИГРОК vs БОТ</button>
+        <div class="difficulty" id="diffPanel" style="display: none;">
+            <button data-diff="easy">🍃 ЛЁГКИЙ</button>
+            <button data-diff="medium">⚡ СРЕДНИЙ</button>
+            <button data-diff="hard">🔥 СЛОЖНЫЙ</button>
+        </div>
+        <button class="mode-btn back-btn" id="closeMenuBtn">▶ СТАРТ</button>
+    </div>
+</div>
+
+<div class="game-wrapper" id="gameWrapper" style="display: none;">
+    <div class="game-card">
+        <div class="score-panel">
+            <div class="score-box"><div class="score-label">🏒 ИГРОК</div><div class="score-value" id="leftScore">0</div></div>
+            <div class="round-info" id="roundText">РАУНД 1 / 5</div>
+            <div class="score-box"><div class="score-label">🤖 БОТ</div><div class="score-value" id="rightScore">0</div></div>
+            <button class="reset-btn" id="inGameReset">НОВЫЙ МАТЧ</button>
+        </div>
+        <canvas id="hockeyCanvas" width="950" height="500" style="width:100%; aspect-ratio:950/500"></canvas>
+        <div class="instruction" id="gameHint">👆 Нажми на свою клюшку и веди</div>
+    </div>
+</div>
+
+<script>
+    (function(){
+        // ---------- РАЗМЕРЫ (фиксированные, но canvas масштабируется) ----------
+        const CW = 950, CH = 500;
+        const canvas = document.getElementById('hockeyCanvas');
+        canvas.width = CW; canvas.height = CH;
+        const ctx = canvas.getContext('2d');
+        
+        // ---------- ИГРОВЫЕ ПАРАМЕТРЫ ----------
+        const PADDLE_RADIUS = 42;
+        const PUCK_RADIUS = 18;
+        
+        let puck = { x: CW/2, y: CH/2, vx: 0, vy: 0, radius: PUCK_RADIUS };
+        let leftPaddle = { x: 150, y: CH/2, radius: PADDLE_RADIUS };
+        let rightPaddle = { x: CW - 150, y: CH/2, radius: PADDLE_RADIUS };
+        
+        // Счёт матча
+        let leftRounds = 0;
+        let rightRounds = 0;
+        let currentRoundNumber = 1;
+        const MAX_ROUNDS = 5;
+        let matchWinner = null;
+        let gameActive = true;
+        let goalCooldown = 0;
+        const GOAL_COOLDOWN_MAX = 30;
+        
+        let gameMode = 'pvp';
+        let botDifficulty = 'medium';
+        let coins = 0;
+        
+        // Механика готовности
+        let leftPlayerReady = false;
+        let rightPlayerReady = (gameMode === 'pve');
+        let gameReady = false;
+        
+        // Таймер для авт-сброса
+        let stuckTimer = 0;
+        const STUCK_TIMEOUT = 90;
+        
+        function resetStuckTimer() { stuckTimer = 0; }
+        
+        function resetPuckToPlayerSide() {
+            puck.x = CW/2;
+            puck.y = CH/2;
+            let angle = Math.PI;
+            let randomY = (Math.random() - 0.5) * 1.2;
+            let spd = 5.5;
+            puck.vx = Math.cos(angle) * spd;
+            puck.vy = randomY * 3.5;
+            let totalSpd = Math.hypot(puck.vx, puck.vy);
+            if(totalSpd > MAX_SPEED) {
+                puck.vx = (puck.vx / totalSpd) * MAX_SPEED;
+                puck.vy = (puck.vy / totalSpd) * MAX_SPEED;
+            }
+            stuckTimer = 0;
+            gameHintSpan.innerText = "🎯 Шайба возвращена в твою сторону!";
+            setTimeout(() => {
+                if (gameReady && gameActive) gameHintSpan.innerText = "Веди клюшку пальцем";
+            }, 1500);
+        }
+        
+        function checkStuckPuck() {
+            if (!gameReady) return;
+            if (goalCooldown > 0) return;
+            let speed = Math.abs(puck.vx) + Math.abs(puck.vy);
+            if (speed < 0.8) {
+                stuckTimer++;
+                if (stuckTimer >= STUCK_TIMEOUT) {
+                    resetPuckToPlayerSide();
+                }
+            } else {
+                stuckTimer = 0;
+            }
+        }
+        
+        // Управление
+        let activeDrags = new Map();
+        let mouseDragTarget = null;
+        
+        // ---------- ФИЗИКА ----------
+        const FRICTION_AIR = 0.992;
+        const WALL_BOUNCE_DAMP = 0.98;
+        const PADDLE_HIT_FORCE = 2.2;
+        const EXTRA_BOOST = 1.25;
+        const MAX_SPEED = 22;
+        const TOP_BOUND = 22, BOTTOM_BOUND = CH - 22, LEFT_BOUND = 22, RIGHT_BOUND = CW - 22;
+        const GOAL_WIDTH = 96, GOAL_Y_START = (CH - GOAL_WIDTH)/2, LEFT_GOAL_X = 8, RIGHT_GOAL_X = CW - 8 - GOAL_WIDTH;
+        
+        // UI элементы
+        const menuOverlay = document.getElementById('menuOverlay');
+        const gameWrapper = document.getElementById('gameWrapper');
+        const coinDisplaySpan = document.getElementById('coinDisplay');
+        const leftScoreSpan = document.getElementById('leftScore');
+        const rightScoreSpan = document.getElementById('rightScore');
+        const roundTextSpan = document.getElementById('roundText');
+        const gameHintSpan = document.getElementById('gameHint');
+        const diffPanel = document.getElementById('diffPanel');
+        
+        function updateCoinUI() { coinDisplaySpan.innerText = `🪙 ${coins}`; }
+        function updateRoundsUI() { 
+            leftScoreSpan.innerText = leftRounds; 
+            rightScoreSpan.innerText = rightRounds;
+            roundTextSpan.innerText = `РАУНД ${currentRoundNumber} / ${MAX_ROUNDS}`;
+        }
+        
+        function isHitLeft(x,y) { return Math.hypot(x-leftPaddle.x, y-leftPaddle.y) <= leftPaddle.radius+12; }
+        function isHitRight(x,y) { return Math.hypot(x-rightPaddle.x, y-rightPaddle.y) <= rightPaddle.radius+12; }
+        
+        function moveLeftTo(x,y){
+            let tx = Math.min((CW/2)-leftPaddle.radius-12, Math.max(LEFT_BOUND+leftPaddle.radius, x));
+            let ty = Math.min(BOTTOM_BOUND-leftPaddle.radius, Math.max(TOP_BOUND+leftPaddle.radius, y));
+            leftPaddle.x = tx; leftPaddle.y = ty;
+        }
+        
+        function moveRightTo(x,y){
+            let tx = Math.min(RIGHT_BOUND-rightPaddle.radius, Math.max((CW/2)+rightPaddle.radius+12, x));
+            let ty = Math.min(BOTTOM_BOUND-rightPaddle.radius, Math.max(TOP_BOUND+rightPaddle.radius, y));
+            rightPaddle.x = tx; rightPaddle.y = ty;
+        }
+        
+        // Бот
+        function updateBot(){
+            if(gameMode !== 'pve') return;
+            if(!gameReady) return;
+            if(goalCooldown > 0) return;
+            
+            let predictFrames = 6;
+            let futureY = puck.y + puck.vy * predictFrames;
+            futureY = Math.min(BOTTOM_BOUND - rightPaddle.radius, Math.max(TOP_BOUND + rightPaddle.radius, futureY));
+            let diff = futureY - rightPaddle.y;
+            let speed = 0;
+            switch(botDifficulty){
+                case 'easy': speed = 5.5; break;
+                case 'medium': speed = 10; break;
+                case 'hard': speed = 16; break;
+            }
+            if(botDifficulty === 'hard' && Math.abs(diff) > 35) speed *= 1.3;
+            if(Math.abs(diff) > 2.5){
+                let move = Math.min(Math.abs(diff), speed);
+                rightPaddle.y += Math.sign(diff) * move;
+            }
+            rightPaddle.y = Math.min(BOTTOM_BOUND - rightPaddle.radius, Math.max(TOP_BOUND + rightPaddle.radius, rightPaddle.y));
+            if(botDifficulty === 'easy' && Math.random() < 0.04){
+                rightPaddle.y += (Math.random() - 0.5) * 24;
+                rightPaddle.y = Math.min(BOTTOM_BOUND - rightPaddle.radius, Math.max(TOP_BOUND + rightPaddle.radius, rightPaddle.y));
+            }
+        }
+        
+        function startNewRound(){
+            leftPlayerReady = false;
+            if(gameMode === 'pvp') rightPlayerReady = false;
+            else rightPlayerReady = true;
+            gameReady = false;
+            puck.x = CW/2; puck.y = CH/2;
+            puck.vx = 0; puck.vy = 0;
+            leftPaddle.x = 150; leftPaddle.y = CH/2;
+            rightPaddle.x = CW - 150; rightPaddle.y = CH/2;
+            goalCooldown = 0;
+            stuckTimer = 0;
+            activeDrags.clear();
+            if(gameMode === 'pvp') gameHintSpan.innerText = "👆 ОБА: нажмите на свои клюшки";
+            else gameHintSpan.innerText = "👆 Коснись своей клюшки для старта";
+        }
+        
+        function activateGame(){
+            if(gameReady) return;
+            gameReady = true;
+            let angle = Math.random() * Math.PI * 2;
+            let spd = 4.8;
+            puck.vx = Math.cos(angle)*spd;
+            puck.vy = Math.sin(angle)*spd;
+            stuckTimer = 0;
+            gameHintSpan.innerText = "⚡ ИГРА ИДЁТ! ⚡";
+            setTimeout(()=>{ if(gameReady && gameActive) gameHintSpan.innerText = "Веди клюшку пальцем"; }, 2000);
+        }
+        
+        function checkGameReady(){
+            if(!gameActive) return;
+            if(!gameReady && leftPlayerReady && (gameMode==='pvp' ? rightPlayerReady : true)){
+                activateGame();
+            }
+        }
+        
+        function awardGoal(scoredByLeft){
+            if(goalCooldown>0) return;
+            if(!gameActive) return;
+            goalCooldown = GOAL_COOLDOWN_MAX;
+            if(scoredByLeft) leftRounds++;
+            else rightRounds++;
+            coins += 3;
+            updateCoinUI();
+            updateRoundsUI();
+            
+            if(leftRounds >= MAX_ROUNDS || rightRounds >= MAX_ROUNDS){
+                matchWinner = leftRounds >= MAX_ROUNDS ? 'left' : 'right';
+                let winCoins = 25;
+                coins += winCoins;
+                updateCoinUI();
+                let winnerName = (matchWinner === 'left') ? 'ИГРОК' : (gameMode==='pvp' ? 'ИГРОК 2' : 'БОТ');
+                gameHintSpan.innerText = `🏆 ПОБЕДА: ${winnerName}! +${winCoins} 🪙 🏆`;
+                gameActive = false;
+                gameReady = false;
+                return;
+            }
+            currentRoundNumber++;
+            updateRoundsUI();
+            startNewRound();
+            gameHintSpan.innerText = `⚡ РАУНД ${currentRoundNumber}! ГОЛ! +3 🪙 ⚡`;
+            setTimeout(()=> { 
+                if(!gameActive) return; 
+                if(!gameReady) gameHintSpan.innerText = gameMode==='pvp' ? "Оба коснитесь клюшек" : "Коснись клюшки для старта"; 
+            }, 1800);
+        }
+        
+        function checkGoal(){
+            if(goalCooldown>0) return;
+            if(!gameReady) return;
+            const puckL = puck.x-puck.radius, puckR = puck.x+puck.radius, puckT = puck.y-puck.radius, puckB = puck.y+puck.radius;
+            if(puckL <= LEFT_GOAL_X+18 && puckR >= LEFT_GOAL_X && puckB >= GOAL_Y_START && puckT <= GOAL_Y_START+GOAL_WIDTH){
+                awardGoal(false);
+                return;
+            }
+            if(puckR >= RIGHT_GOAL_X && puckL <= RIGHT_GOAL_X+GOAL_WIDTH && puckB >= GOAL_Y_START && puckT <= GOAL_Y_START+GOAL_WIDTH){
+                awardGoal(true);
+                return;
+            }
+        }
+        
+        function updatePhysics(){
+            if(goalCooldown>0){ goalCooldown--; return; }
+            if(!gameReady) return;
+            puck.x += puck.vx; puck.y += puck.vy;
+            puck.vx *= FRICTION_AIR; puck.vy *= FRICTION_AIR;
+            let spd = Math.hypot(puck.vx, puck.vy);
+            if(spd > MAX_SPEED){ puck.vx = puck.vx/spd*MAX_SPEED; puck.vy = puck.vy/spd*MAX_SPEED; }
+            const inLeftGoal = (puck.y+puck.radius >= GOAL_Y_START && puck.y-puck.radius <= GOAL_Y_START+GOAL_WIDTH);
+            const inRightGoal = (puck.y+puck.radius >= GOAL_Y_START && puck.y-puck.radius <= GOAL_Y_START+GOAL_WIDTH);
+            if(puck.y-puck.radius <= TOP_BOUND){ puck.y = TOP_BOUND+puck.radius+1; puck.vy = -puck.vy*WALL_BOUNCE_DAMP; }
+            if(puck.y+puck.radius >= BOTTOM_BOUND){ puck.y = BOTTOM_BOUND-puck.radius-1; puck.vy = -puck.vy*WALL_BOUNCE_DAMP; }
+            if(puck.x-puck.radius <= LEFT_BOUND && !inLeftGoal){ puck.x = LEFT_BOUND+puck.radius+1; puck.vx = -puck.vx*WALL_BOUNCE_DAMP; }
+            if(puck.x+puck.radius >= RIGHT_BOUND && !inRightGoal){ puck.x = RIGHT_BOUND-puck.radius-1; puck.vx = -puck.vx*WALL_BOUNCE_DAMP; }
+            puck.x = Math.min(Math.max(puck.x, LEFT_BOUND+puck.radius), RIGHT_BOUND-puck.radius);
+            puck.y = Math.min(Math.max(puck.y, TOP_BOUND+puck.radius), BOTTOM_BOUND-puck.radius);
+        }
+        
+        function collidePaddle(paddle){
+            let dx = puck.x-paddle.x, dy = puck.y-paddle.y, dist = Math.hypot(dx,dy), minD = puck.radius+paddle.radius;
+            if(dist < minD){
+                let angle = Math.atan2(dy,dx);
+                let overlap = minD-dist;
+                puck.x += Math.cos(angle)*(overlap+3); puck.y += Math.sin(angle)*(overlap+3);
+                let nx = dx/dist, ny = dy/dist, vdotn = puck.vx*nx + puck.vy*ny;
+                if(vdotn < 0){ let impulse = (1+PADDLE_HIT_FORCE)*vdotn; puck.vx -= impulse*nx; puck.vy -= impulse*ny; }
+                puck.vx *= EXTRA_BOOST; puck.vy *= EXTRA_BOOST;
+                let spdL = Math.hypot(puck.vx, puck.vy);
+                if(spdL > MAX_SPEED){ puck.vx = puck.vx/spdL*MAX_SPEED; puck.vy = puck.vy/spdL*MAX_SPEED; }
+                resetStuckTimer();
+                return true;
+            }
+            return false;
+        }
+        
+        // Отрисовка
+        function draw(){
+            ctx.fillStyle = "#c1e2d4"; ctx.fillRect(0,0,CW,CH);
+            ctx.strokeStyle = "#eefaf4"; ctx.lineWidth = 3;
+            ctx.beginPath(); ctx.moveTo(CW/2,10); ctx.lineTo(CW/2,CH-10); ctx.stroke();
+            ctx.beginPath(); ctx.arc(CW/2,CH/2,60,0,Math.PI*2); ctx.stroke();
+            ctx.fillStyle = "#aac7bbaa";
+            ctx.fillRect(LEFT_GOAL_X-6, GOAL_Y_START-6, GOAL_WIDTH+12, GOAL_WIDTH+12);
+            ctx.fillStyle = "#e7cfa1"; ctx.fillRect(LEFT_GOAL_X, GOAL_Y_START, GOAL_WIDTH, GOAL_WIDTH);
+            ctx.fillRect(RIGHT_GOAL_X, GOAL_Y_START, GOAL_WIDTH, GOAL_WIDTH);
+            ctx.fillStyle = "#c2813a";
+            ctx.beginPath(); ctx.arc(leftPaddle.x, leftPaddle.y, leftPaddle.radius,0,Math.PI*2); ctx.fill();
+            ctx.fillStyle = "#3f7b6b";
+            ctx.beginPath(); ctx.arc(rightPaddle.x, rightPaddle.y, rightPaddle.radius,0,Math.PI*2); ctx.fill();
+            if(!gameReady && goalCooldown===0 && gameActive){ ctx.globalAlpha=0.4; ctx.fillStyle="#888"; ctx.beginPath(); ctx.arc(puck.x,puck.y,puck.radius,0,Math.PI*2); ctx.fill(); ctx.globalAlpha=1; }
+            else { ctx.fillStyle = "#111"; ctx.shadowBlur=6; ctx.beginPath(); ctx.arc(puck.x,puck.y,puck.radius,0,Math.PI*2); ctx.fill(); ctx.fillStyle="#aaa"; ctx.beginPath(); ctx.arc(puck.x-3,puck.y-3,puck.radius-7,0,Math.PI*2); ctx.fill(); ctx.shadowBlur=0; }
+            ctx.font = "bold 20px system-ui"; 
+            ctx.fillStyle = leftPlayerReady?"#a5ffb0":"#ffaa88"; 
+            ctx.fillText(leftPlayerReady?"✅":"⭕", leftPaddle.x-30, leftPaddle.y-30);
+            if(gameMode==='pvp'){ 
+                ctx.fillStyle = rightPlayerReady?"#a5ffb0":"#ffaa88"; 
+                ctx.fillText(rightPlayerReady?"✅":"⭕", rightPaddle.x+18, rightPaddle.y-30); 
+            } else {
+                ctx.fillStyle = "#ffd966"; ctx.font = "bold 14px monospace"; 
+                ctx.fillText("🤖", rightPaddle.x-8, rightPaddle.y-25);
+            }
+        }
+        
+        // Обработчики касаний
+        function onTouchStart(e){
+            e.preventDefault();
+            for(let i=0; i<e.touches.length; i++){
+                let t=e.touches[i], rect=canvas.getBoundingClientRect(), sx=canvas.width/rect.width, sy=canvas.height/rect.height;
+                let x=(t.clientX-rect.left)*sx, y=(t.clientY-rect.top)*sy;
+                x=Math.min(Math.max(x,0),CW); y=Math.min(Math.max(y,0),CH);
+                if(isHitLeft(x,y) && gameActive){
+                    if(!activeDrags.has(t.identifier)) activeDrags.set(t.identifier,{target:'left'});
+                    if(!leftPlayerReady && !gameReady && gameActive){ leftPlayerReady=true; checkGameReady(); }
+                    moveLeftTo(x,y);
+                }
+                else if(gameMode==='pvp' && isHitRight(x,y) && gameActive){
+                    if(!activeDrags.has(t.identifier)) activeDrags.set(t.identifier,{target:'right'});
+                    if(!rightPlayerReady && !gameReady && gameActive){ rightPlayerReady=true; checkGameReady(); }
+                    moveRightTo(x,y);
+                }
+            }
+        }
+        function onTouchMove(e){
+            e.preventDefault();
+            for(let i=0; i<e.touches.length; i++){
+                let t=e.touches[i], drag=activeDrags.get(t.identifier); if(!drag) continue;
+                let rect=canvas.getBoundingClientRect(), sx=canvas.width/rect.width, sy=canvas.height/rect.height;
+                let x=(t.clientX-rect.left)*sx, y=(t.clientY-rect.top)*sy;
+                x=Math.min(Math.max(x,0),CW); y=Math.min(Math.max(y,0),CH);
+                if(drag.target==='left') moveLeftTo(x,y);
+                else if(drag.target==='right') moveRightTo(x,y);
+            }
+        }
+        function onTouchEnd(e){
+            e.preventDefault();
+            for(let i=0; i<e.changedTouches.length; i++) activeDrags.delete(e.changedTouches[i].identifier);
+        }
+        
+        // Мышь
+        let mouseDown=false, mouseTarget=null;
+        function onMouseMove(e){
+            if(!mouseDown) return;
+            let rect=canvas.getBoundingClientRect(), sx=canvas.width/rect.width, sy=canvas.height/rect.height;
+            let x=(e.clientX-rect.left)*sx, y=(e.clientY-rect.top)*sy;
+            x=Math.min(Math.max(x,0),CW); y=Math.min(Math.max(y,0),CH);
+            if(mouseTarget==='left') moveLeftTo(x,y);
+            else if(mouseTarget==='right') moveRightTo(x,y);
+        }
+        function onMouseDown(e){
+            e.preventDefault();
+            let rect=canvas.getBoundingClientRect(), sx=canvas.width/rect.width, sy=canvas.height/rect.height;
+            let x=(e.clientX-rect.left)*sx, y=(e.clientY-rect.top)*sy;
+            x=Math.min(Math.max(x,0),CW); y=Math.min(Math.max(y,0),CH);
+            if(isHitLeft(x,y) && gameActive){
+                mouseTarget='left'; mouseDown=true;
+                if(!leftPlayerReady && !gameReady && gameActive){ leftPlayerReady=true; checkGameReady(); }
+                moveLeftTo(x,y);
+            } else if(gameMode==='pvp' && isHitRight(x,y) && gameActive){
+                mouseTarget='right'; mouseDown=true;
+                if(!rightPlayerReady && !gameReady && gameActive){ rightPlayerReady=true; checkGameReady(); }
+                moveRightTo(x,y);
+            }
+        }
+        function onMouseUp(){ mouseDown=false; mouseTarget=null; }
+        
+        function startGame(mode, diff){
+            gameMode = mode;
+            botDifficulty = diff;
+            leftRounds = 0; rightRounds = 0; currentRoundNumber = 1; matchWinner = null; gameActive = true;
+            updateRoundsUI();
+            if(gameMode === 'pvp') rightPlayerReady = false;
+            else rightPlayerReady = true;
+            leftPlayerReady = false; gameReady = false;
+            startNewRound();
+            if(gameMode === 'pvp') gameHintSpan.innerText = "👆 Оба коснитесь своих клюшек";
+            else gameHintSpan.innerText = "👆 Коснись своей клюшки для старта";
+            menuOverlay.style.display = 'none';
+            gameWrapper.style.display = 'flex';
+        }
+        
+        // Меню
+        document.querySelectorAll('[data-mode]').forEach(btn=>{
+            btn.addEventListener('click', (e)=>{
+                let mode = btn.getAttribute('data-mode');
+                if(mode === 'pve') diffPanel.style.display = 'flex';
+                else { diffPanel.style.display = 'none'; startGame('pvp', 'medium'); }
+            });
+        });
+        document.querySelectorAll('[data-diff]').forEach(btn=>{
+            btn.addEventListener('click', ()=>{
+                let diff = btn.getAttribute('data-diff');
+                document.querySelectorAll('[data-diff]').forEach(b=>b.classList.remove('active-diff'));
+                btn.classList.add('active-diff');
+                startGame('pve', diff);
+            });
+        });
+        document.getElementById('closeMenuBtn').addEventListener('click', ()=>{
+            if(gameMode === 'pve' && diffPanel.style.display !== 'flex') diffPanel.style.display = 'flex';
+            else if(gameMode === 'pvp') startGame('pvp', 'medium');
+        });
+        document.getElementById('inGameReset').addEventListener('click', ()=>{
+            leftRounds=0; rightRounds=0; currentRoundNumber=1; gameActive=true; matchWinner=null;
+            updateRoundsUI();
+            startNewRound();
+            if(gameMode === 'pvp') rightPlayerReady = false; else rightPlayerReady = true;
+            leftPlayerReady=false; gameReady=false;
+            gameHintSpan.innerText = gameMode==='pvp' ? "Оба коснитесь клюшек" : "Коснись клюшки для старта";
+        });
+        
+        function gameLoop(){
+            updateBot();
+            updatePhysics();
+            if(gameReady) collidePaddle(leftPaddle);
+            if(gameReady && gameMode === 'pvp') collidePaddle(rightPaddle);
+            else if(gameReady && gameMode === 'pve') collidePaddle(rightPaddle);
+            checkGoal();
+            checkStuckPuck();
+            draw();
+            requestAnimationFrame(gameLoop);
+        }
+        
+        canvas.addEventListener('touchstart', onTouchStart, {passive:false});
+        canvas.addEventListener('touchmove', onTouchMove, {passive:false});
+        canvas.addEventListener('touchend', onTouchEnd);
+        canvas.addEventListener('mousedown', onMouseDown);
+        window.addEventListener('mousemove', onMouseMove);
+        window.addEventListener('mouseup', onMouseUp);
+        
+        function checkOrientation(){ document.getElementById('orientWarn').style.display = (window.innerHeight > window.innerWidth) ? 'flex' : 'none'; }
+        window.addEventListener('resize', checkOrientation);
+        checkOrientation();
+        
+        gameLoop();
+        updateCoinUI();
+    })();
+</script>
+</body>
+</html>
