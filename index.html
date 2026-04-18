@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no, viewport-fit=cover">
-    <title>Хоккей Дуэль | Всё помещается</title>
+    <title>Хоккей Дуэль | Счёт на поле | Компактно</title>
     <style>
         * {
             margin: 0;
@@ -110,7 +110,7 @@
 
         .back-btn { background: #5f5f5f; box-shadow: 0 3px 0 #2a2a2a; margin-top: 10px; }
 
-        /* ИГРОВОЙ ЭКРАН — компактный, без обрезания */
+        /* ИГРОВОЙ ЭКРАН — поле меньше, счёт нарисован на canvas */
         .game-wrapper {
             display: flex;
             justify-content: center;
@@ -122,12 +122,11 @@
         }
 
         .game-card {
-            background: #0d2e27;
-            border-radius: 24px;
-            padding: 8px;
-            box-shadow: 0 20px 35px rgba(0,0,0,0.5);
+            background: transparent;
+            padding: 0;
             width: 100%;
-            max-width: 100%;
+            display: flex;
+            justify-content: center;
         }
 
         canvas {
@@ -135,61 +134,44 @@
             margin: 0 auto;
             background: #1b4d3e;
             border-radius: 20px;
-            width: 100%;
-            height: auto;
+            width: auto;
+            height: 98%;
+            max-height: 98%;
             touch-action: none;
-        }
-
-        .score-panel {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            margin-bottom: 8px;
-            gap: 6px;
-            background: #071f1bdd;
-            border-radius: 50px;
-            padding: 4px 10px;
-        }
-
-        .score-box {
-            text-align: center;
-            background: #00000066;
-            padding: 2px 6px;
-            border-radius: 30px;
-            min-width: 50px;
-        }
-        .score-value { font-size: 1.2rem; font-weight: 800; color: #fff2c9; line-height: 1.2; }
-        .score-label { font-size: 0.45rem; color: #b9f6e6; }
-
-        .round-info {
-            background: #000000aa;
-            padding: 3px 8px;
-            border-radius: 30px;
-            font-weight: bold;
-            color: #ffd966;
-            font-size: 0.6rem;
-            white-space: nowrap;
-        }
-
-        .reset-btn {
-            background: #ffcd7e;
-            border: none;
-            font-size: 0.65rem;
-            padding: 4px 10px;
-            border-radius: 30px;
-            font-weight: bold;
-            cursor: pointer;
-            white-space: nowrap;
+            box-shadow: 0 10px 25px rgba(0,0,0,0.4);
         }
 
         .instruction {
-            margin-top: 6px;
-            font-size: 0.5rem;
+            position: fixed;
+            bottom: 8px;
+            left: 0;
+            right: 0;
+            margin: 0 auto;
+            width: fit-content;
+            font-size: 0.55rem;
             color: #b9f6e6;
             text-align: center;
-            background: #071f1b99;
+            background: #071f1bcc;
             border-radius: 30px;
-            padding: 3px 6px;
+            padding: 4px 12px;
+            backdrop-filter: blur(4px);
+            pointer-events: none;
+            z-index: 10;
+        }
+
+        .reset-btn-abs {
+            position: fixed;
+            top: 8px;
+            right: 8px;
+            background: #ffcd7e;
+            border: none;
+            font-size: 0.65rem;
+            padding: 5px 12px;
+            border-radius: 30px;
+            font-weight: bold;
+            cursor: pointer;
+            z-index: 20;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.3);
         }
 
         @media (orientation: portrait) { .orientation-warning { display: flex; } }
@@ -215,35 +197,29 @@
 
 <div class="game-wrapper" id="gameWrapper" style="display: none;">
     <div class="game-card">
-        <div class="score-panel">
-            <div class="score-box"><div class="score-label">🏒 ИГРОК</div><div class="score-value" id="leftScore">0</div></div>
-            <div class="round-info" id="roundText">РАУНД 1 / 5</div>
-            <div class="score-box"><div class="score-label">🤖 БОТ</div><div class="score-value" id="rightScore">0</div></div>
-            <button class="reset-btn" id="inGameReset">НОВЫЙ МАТЧ</button>
-        </div>
-        <!-- УМЕНЬШЕННАЯ ВЫСОТА ПОЛЯ (450 вместо 500), чтобы точно влезало -->
-        <canvas id="hockeyCanvas" width="900" height="450" style="width:100%; aspect-ratio:900/450"></canvas>
-        <div class="instruction" id="gameHint">👆 Нажми на свою клюшку и веди</div>
+        <canvas id="hockeyCanvas" width="780" height="400" style="width:100%; height:auto; max-width:780px; aspect-ratio:780/400"></canvas>
     </div>
+    <button class="reset-btn-abs" id="inGameReset">НОВЫЙ МАТЧ</button>
+    <div class="instruction" id="gameHint">👆 Нажми на свою клюшку и веди</div>
 </div>
 
 <script>
     (function(){
-        // ---------- РАЗМЕРЫ: УМЕНЬШЕННАЯ ВЫСОТА, ЧТОБЫ НИЗ НЕ ОБРЕЗАЛО ----------
-        const CW = 900;
-        const CH = 450;
+        // ---------- УМЕНЬШЕННОЕ ПОЛЕ (780x400) ----------
+        const CW = 780;
+        const CH = 400;
         
         const canvas = document.getElementById('hockeyCanvas');
         canvas.width = CW; canvas.height = CH;
         const ctx = canvas.getContext('2d');
         
-        // ---------- ИГРОВЫЕ ПАРАМЕТРЫ (масштабированы под новую высоту) ----------
-        const PADDLE_RADIUS = 38;      // чуть меньше, чтобы не вылезало
-        const PUCK_RADIUS = 16;
+        // ---------- ИГРОВЫЕ ПАРАМЕТРЫ (адаптированы под меньший размер) ----------
+        const PADDLE_RADIUS = 34;
+        const PUCK_RADIUS = 14;
         
         let puck = { x: CW/2, y: CH/2, vx: 0, vy: 0, radius: PUCK_RADIUS };
-        let leftPaddle = { x: 130, y: CH/2, radius: PADDLE_RADIUS };
-        let rightPaddle = { x: CW - 130, y: CH/2, radius: PADDLE_RADIUS };
+        let leftPaddle = { x: 110, y: CH/2, radius: PADDLE_RADIUS };
+        let rightPaddle = { x: CW - 110, y: CH/2, radius: PADDLE_RADIUS };
         
         // Счёт матча
         let leftRounds = 0;
@@ -275,7 +251,7 @@
             puck.y = CH/2;
             let angle = Math.PI;
             let randomY = (Math.random() - 0.5) * 1.2;
-            let spd = 5.5;
+            let spd = 5.2;
             puck.vx = Math.cos(angle) * spd;
             puck.vy = randomY * 3.0;
             let totalSpd = Math.hypot(puck.vx, puck.vy);
@@ -284,10 +260,10 @@
                 puck.vy = (puck.vy / totalSpd) * MAX_SPEED;
             }
             stuckTimer = 0;
-            gameHintSpan.innerText = "🎯 Шайба возвращена в твою сторону!";
+            gameHintSpan.innerText = "🎯 Шайба к тебе!";
             setTimeout(() => {
-                if (gameReady && gameActive) gameHintSpan.innerText = "Веди клюшку пальцем";
-            }, 1500);
+                if (gameReady && gameActive) gameHintSpan.innerText = "Веди клюшку";
+            }, 1200);
         }
         
         function checkStuckPuck() {
@@ -308,31 +284,23 @@
         let activeDrags = new Map();
         let mouseDragTarget = null;
         
-        // ---------- ФИЗИКА (подогнана под новую высоту) ----------
+        // ---------- ФИЗИКА ----------
         const FRICTION_AIR = 0.992;
         const WALL_BOUNCE_DAMP = 0.98;
         const PADDLE_HIT_FORCE = 2.2;
         const EXTRA_BOOST = 1.25;
-        const MAX_SPEED = 20;
-        const TOP_BOUND = 18, BOTTOM_BOUND = CH - 18, LEFT_BOUND = 18, RIGHT_BOUND = CW - 18;
-        const GOAL_WIDTH = 86, GOAL_Y_START = (CH - 86)/2, LEFT_GOAL_X = 8, RIGHT_GOAL_X = CW - 8 - 86;
+        const MAX_SPEED = 19;
+        const TOP_BOUND = 16, BOTTOM_BOUND = CH - 16, LEFT_BOUND = 16, RIGHT_BOUND = CW - 16;
+        const GOAL_WIDTH = 76, GOAL_Y_START = (CH - 76)/2, LEFT_GOAL_X = 8, RIGHT_GOAL_X = CW - 8 - 76;
         
         // UI элементы
         const menuOverlay = document.getElementById('menuOverlay');
         const gameWrapper = document.getElementById('gameWrapper');
         const coinDisplaySpan = document.getElementById('coinDisplay');
-        const leftScoreSpan = document.getElementById('leftScore');
-        const rightScoreSpan = document.getElementById('rightScore');
-        const roundTextSpan = document.getElementById('roundText');
         const gameHintSpan = document.getElementById('gameHint');
         const diffPanel = document.getElementById('diffPanel');
         
         function updateCoinUI() { coinDisplaySpan.innerText = `🪙 ${coins}`; }
-        function updateRoundsUI() { 
-            leftScoreSpan.innerText = leftRounds; 
-            rightScoreSpan.innerText = rightRounds;
-            roundTextSpan.innerText = `РАУНД ${currentRoundNumber} / ${MAX_ROUNDS}`;
-        }
         
         function isHitLeft(x,y) { return Math.hypot(x-leftPaddle.x, y-leftPaddle.y) <= leftPaddle.radius+10; }
         function isHitRight(x,y) { return Math.hypot(x-rightPaddle.x, y-rightPaddle.y) <= rightPaddle.radius+10; }
@@ -349,7 +317,7 @@
             rightPaddle.x = tx; rightPaddle.y = ty;
         }
         
-        // Бот (адаптирован)
+        // Бот
         function updateBot(){
             if(gameMode !== 'pve') return;
             if(!gameReady) return;
@@ -361,9 +329,9 @@
             let diff = futureY - rightPaddle.y;
             let speed = 0;
             switch(botDifficulty){
-                case 'easy': speed = 5; break;
-                case 'medium': speed = 9; break;
-                case 'hard': speed = 14; break;
+                case 'easy': speed = 4.8; break;
+                case 'medium': speed = 8.5; break;
+                case 'hard': speed = 13; break;
             }
             if(botDifficulty === 'hard' && Math.abs(diff) > 30) speed *= 1.3;
             if(Math.abs(diff) > 2.5){
@@ -372,7 +340,7 @@
             }
             rightPaddle.y = Math.min(BOTTOM_BOUND - rightPaddle.radius, Math.max(TOP_BOUND + rightPaddle.radius, rightPaddle.y));
             if(botDifficulty === 'easy' && Math.random() < 0.04){
-                rightPaddle.y += (Math.random() - 0.5) * 20;
+                rightPaddle.y += (Math.random() - 0.5) * 18;
                 rightPaddle.y = Math.min(BOTTOM_BOUND - rightPaddle.radius, Math.max(TOP_BOUND + rightPaddle.radius, rightPaddle.y));
             }
         }
@@ -384,25 +352,25 @@
             gameReady = false;
             puck.x = CW/2; puck.y = CH/2;
             puck.vx = 0; puck.vy = 0;
-            leftPaddle.x = 130; leftPaddle.y = CH/2;
-            rightPaddle.x = CW - 130; rightPaddle.y = CH/2;
+            leftPaddle.x = 110; leftPaddle.y = CH/2;
+            rightPaddle.x = CW - 110; rightPaddle.y = CH/2;
             goalCooldown = 0;
             stuckTimer = 0;
             activeDrags.clear();
             if(gameMode === 'pvp') gameHintSpan.innerText = "👆 ОБА: нажмите на свои клюшки";
-            else gameHintSpan.innerText = "👆 Коснись своей клюшки для старта";
+            else gameHintSpan.innerText = "👆 Коснись своей клюшки";
         }
         
         function activateGame(){
             if(gameReady) return;
             gameReady = true;
             let angle = Math.random() * Math.PI * 2;
-            let spd = 4.5;
+            let spd = 4.2;
             puck.vx = Math.cos(angle)*spd;
             puck.vy = Math.sin(angle)*spd;
             stuckTimer = 0;
-            gameHintSpan.innerText = "⚡ ИГРА ИДЁТ! ⚡";
-            setTimeout(()=>{ if(gameReady && gameActive) gameHintSpan.innerText = "Веди клюшку пальцем"; }, 2000);
+            gameHintSpan.innerText = "⚡ ИГРА! ⚡";
+            setTimeout(()=>{ if(gameReady && gameActive) gameHintSpan.innerText = "Веди клюшку"; }, 1800);
         }
         
         function checkGameReady(){
@@ -420,7 +388,6 @@
             else rightRounds++;
             coins += 3;
             updateCoinUI();
-            updateRoundsUI();
             
             if(leftRounds >= MAX_ROUNDS || rightRounds >= MAX_ROUNDS){
                 matchWinner = leftRounds >= MAX_ROUNDS ? 'left' : 'right';
@@ -428,26 +395,25 @@
                 coins += winCoins;
                 updateCoinUI();
                 let winnerName = (matchWinner === 'left') ? 'ИГРОК' : (gameMode==='pvp' ? 'ИГРОК 2' : 'БОТ');
-                gameHintSpan.innerText = `🏆 ПОБЕДА: ${winnerName}! +${winCoins} 🪙 🏆`;
+                gameHintSpan.innerText = `🏆 ПОБЕДА: ${winnerName}! +${winCoins} 🪙`;
                 gameActive = false;
                 gameReady = false;
                 return;
             }
             currentRoundNumber++;
-            updateRoundsUI();
             startNewRound();
-            gameHintSpan.innerText = `⚡ РАУНД ${currentRoundNumber}! ГОЛ! +3 🪙 ⚡`;
+            gameHintSpan.innerText = `⚡ РАУНД ${currentRoundNumber}! ГОЛ! +3 🪙`;
             setTimeout(()=> { 
                 if(!gameActive) return; 
-                if(!gameReady) gameHintSpan.innerText = gameMode==='pvp' ? "Оба коснитесь клюшек" : "Коснись клюшки для старта"; 
-            }, 1800);
+                if(!gameReady) gameHintSpan.innerText = gameMode==='pvp' ? "Оба коснитесь клюшек" : "Коснись клюшки"; 
+            }, 1500);
         }
         
         function checkGoal(){
             if(goalCooldown>0) return;
             if(!gameReady) return;
             const puckL = puck.x-puck.radius, puckR = puck.x+puck.radius, puckT = puck.y-puck.radius, puckB = puck.y+puck.radius;
-            if(puckL <= LEFT_GOAL_X+16 && puckR >= LEFT_GOAL_X && puckB >= GOAL_Y_START && puckT <= GOAL_Y_START+GOAL_WIDTH){
+            if(puckL <= LEFT_GOAL_X+14 && puckR >= LEFT_GOAL_X && puckB >= GOAL_Y_START && puckT <= GOAL_Y_START+GOAL_WIDTH){
                 awardGoal(false);
                 return;
             }
@@ -479,7 +445,7 @@
             if(dist < minD){
                 let angle = Math.atan2(dy,dx);
                 let overlap = minD-dist;
-                puck.x += Math.cos(angle)*(overlap+3); puck.y += Math.sin(angle)*(overlap+3);
+                puck.x += Math.cos(angle)*(overlap+2.5); puck.y += Math.sin(angle)*(overlap+2.5);
                 let nx = dx/dist, ny = dy/dist, vdotn = puck.vx*nx + puck.vy*ny;
                 if(vdotn < 0){ let impulse = (1+PADDLE_HIT_FORCE)*vdotn; puck.vx -= impulse*nx; puck.vy -= impulse*ny; }
                 puck.vx *= EXTRA_BOOST; puck.vy *= EXTRA_BOOST;
@@ -491,35 +457,77 @@
             return false;
         }
         
-        // Отрисовка (адаптирована под новую высоту)
+        // ========== ОТРИСОВКА С ПОЛУПРОЗРАЧНЫМ СЧЁТОМ ==========
         function draw(){
-            ctx.fillStyle = "#c1e2d4"; ctx.fillRect(0,0,CW,CH);
-            ctx.strokeStyle = "#eefaf4"; ctx.lineWidth = 2;
+            // Лёд
+            ctx.fillStyle = "#c1e2d4";
+            ctx.fillRect(0,0,CW,CH);
+            
+            // Разметка
+            ctx.strokeStyle = "#eefaf4";
+            ctx.lineWidth = 2;
             ctx.beginPath(); ctx.moveTo(CW/2,8); ctx.lineTo(CW/2,CH-8); ctx.stroke();
-            ctx.beginPath(); ctx.arc(CW/2,CH/2,50,0,Math.PI*2); ctx.stroke();
+            ctx.beginPath(); ctx.arc(CW/2,CH/2,45,0,Math.PI*2); ctx.stroke();
+            
+            // Ворота
             ctx.fillStyle = "#aac7bbaa";
             ctx.fillRect(LEFT_GOAL_X-5, GOAL_Y_START-5, GOAL_WIDTH+10, GOAL_WIDTH+10);
-            ctx.fillStyle = "#e7cfa1"; ctx.fillRect(LEFT_GOAL_X, GOAL_Y_START, GOAL_WIDTH, GOAL_WIDTH);
+            ctx.fillStyle = "#e7cfa1";
+            ctx.fillRect(LEFT_GOAL_X, GOAL_Y_START, GOAL_WIDTH, GOAL_WIDTH);
             ctx.fillRect(RIGHT_GOAL_X, GOAL_Y_START, GOAL_WIDTH, GOAL_WIDTH);
+            
+            // Клюшки
             ctx.fillStyle = "#c2813a";
             ctx.beginPath(); ctx.arc(leftPaddle.x, leftPaddle.y, leftPaddle.radius,0,Math.PI*2); ctx.fill();
             ctx.fillStyle = "#3f7b6b";
             ctx.beginPath(); ctx.arc(rightPaddle.x, rightPaddle.y, rightPaddle.radius,0,Math.PI*2); ctx.fill();
-            if(!gameReady && goalCooldown===0 && gameActive){ ctx.globalAlpha=0.4; ctx.fillStyle="#888"; ctx.beginPath(); ctx.arc(puck.x,puck.y,puck.radius,0,Math.PI*2); ctx.fill(); ctx.globalAlpha=1; }
-            else { ctx.fillStyle = "#111"; ctx.shadowBlur=5; ctx.beginPath(); ctx.arc(puck.x,puck.y,puck.radius,0,Math.PI*2); ctx.fill(); ctx.fillStyle="#aaa"; ctx.beginPath(); ctx.arc(puck.x-2,puck.y-2,puck.radius-6,0,Math.PI*2); ctx.fill(); ctx.shadowBlur=0; }
-            ctx.font = "bold 18px system-ui"; 
+            
+            // Шайба
+            if(!gameReady && goalCooldown===0 && gameActive){ 
+                ctx.globalAlpha=0.4; ctx.fillStyle="#888"; ctx.beginPath(); ctx.arc(puck.x,puck.y,puck.radius,0,Math.PI*2); ctx.fill(); ctx.globalAlpha=1; 
+            } else { 
+                ctx.fillStyle = "#111"; ctx.shadowBlur=4; ctx.beginPath(); ctx.arc(puck.x,puck.y,puck.radius,0,Math.PI*2); ctx.fill(); 
+                ctx.fillStyle="#aaa"; ctx.beginPath(); ctx.arc(puck.x-2,puck.y-2,puck.radius-5,0,Math.PI*2); ctx.fill(); ctx.shadowBlur=0; 
+            }
+            
+            // Индикаторы готовности
+            ctx.font = "bold 16px system-ui"; 
             ctx.fillStyle = leftPlayerReady?"#a5ffb0":"#ffaa88"; 
-            ctx.fillText(leftPlayerReady?"✅":"⭕", leftPaddle.x-25, leftPaddle.y-25);
+            ctx.fillText(leftPlayerReady?"✅":"⭕", leftPaddle.x-22, leftPaddle.y-22);
             if(gameMode==='pvp'){ 
                 ctx.fillStyle = rightPlayerReady?"#a5ffb0":"#ffaa88"; 
-                ctx.fillText(rightPlayerReady?"✅":"⭕", rightPaddle.x+15, rightPaddle.y-25); 
+                ctx.fillText(rightPlayerReady?"✅":"⭕", rightPaddle.x+12, rightPaddle.y-22); 
             } else {
-                ctx.fillStyle = "#ffd966"; ctx.font = "bold 12px monospace"; 
-                ctx.fillText("🤖", rightPaddle.x-6, rightPaddle.y-22);
+                ctx.fillStyle = "#ffd966"; ctx.font = "bold 11px monospace"; 
+                ctx.fillText("🤖", rightPaddle.x-5, rightPaddle.y-20);
             }
+            
+            // ========== ПОЛУПРОЗРАЧНЫЙ СЧЁТ НА ПОЛЕ ==========
+            ctx.font = "bold 32px 'Segoe UI'";
+            ctx.shadowBlur = 0;
+            ctx.fillStyle = "rgba(0, 0, 0, 0.65)";
+            ctx.fillText(`${leftRounds}`, 35, 55);
+            ctx.fillText(`${rightRounds}`, CW - 65, 55);
+            ctx.fillStyle = "rgba(255, 242, 201, 0.9)";
+            ctx.fillText(`${leftRounds}`, 33, 53);
+            ctx.fillText(`${rightRounds}`, CW - 67, 53);
+            
+            // Номер раунда (полупрозрачный в центре вверху)
+            ctx.font = "bold 14px system-ui";
+            ctx.fillStyle = "rgba(0,0,0,0.6)";
+            ctx.fillText(`РАУНД ${currentRoundNumber}/${MAX_ROUNDS}`, CW/2-45, 28);
+            ctx.fillStyle = "#ffd966cc";
+            ctx.fillText(`РАУНД ${currentRoundNumber}/${MAX_ROUNDS}`, CW/2-46, 27);
+            
+            // Монеты в углу (полупрозрачно)
+            ctx.font = "bold 14px monospace";
+            ctx.fillStyle = "rgba(0,0,0,0.6)";
+            ctx.fillText(`🪙 ${coins}`, CW-70, CH-12);
+            ctx.fillStyle = "#ffd966dd";
+            ctx.fillText(`🪙 ${coins}`, CW-71, CH-13);
         }
         
-        // Обработчики касаний (без изменений, работают)
+        // ---------- ОБРАБОТЧИКИ КАСАНИЙ ----------
         function onTouchStart(e){
             e.preventDefault();
             for(let i=0; i<e.touches.length; i++){
@@ -585,13 +593,12 @@
             gameMode = mode;
             botDifficulty = diff;
             leftRounds = 0; rightRounds = 0; currentRoundNumber = 1; matchWinner = null; gameActive = true;
-            updateRoundsUI();
             if(gameMode === 'pvp') rightPlayerReady = false;
             else rightPlayerReady = true;
             leftPlayerReady = false; gameReady = false;
             startNewRound();
             if(gameMode === 'pvp') gameHintSpan.innerText = "👆 Оба коснитесь своих клюшек";
-            else gameHintSpan.innerText = "👆 Коснись своей клюшки для старта";
+            else gameHintSpan.innerText = "👆 Коснись своей клюшки";
             menuOverlay.style.display = 'none';
             gameWrapper.style.display = 'flex';
         }
@@ -618,11 +625,10 @@
         });
         document.getElementById('inGameReset').addEventListener('click', ()=>{
             leftRounds=0; rightRounds=0; currentRoundNumber=1; gameActive=true; matchWinner=null;
-            updateRoundsUI();
             startNewRound();
             if(gameMode === 'pvp') rightPlayerReady = false; else rightPlayerReady = true;
             leftPlayerReady=false; gameReady=false;
-            gameHintSpan.innerText = gameMode==='pvp' ? "Оба коснитесь клюшек" : "Коснись клюшки для старта";
+            gameHintSpan.innerText = gameMode==='pvp' ? "Оба коснитесь клюшек" : "Коснись клюшки";
         });
         
         function gameLoop(){
