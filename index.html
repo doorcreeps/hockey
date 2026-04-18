@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no, viewport-fit=cover">
-    <title>Хоккей Дуэль | Идеальные размеры | Адаптив</title>
+    <title>Хоккей Дуэль | Всё помещается</title>
     <style>
         * {
             margin: 0;
@@ -27,7 +27,7 @@
             height: 100%;
         }
 
-        /* МЕНЮ (адаптивное) */
+        /* МЕНЮ */
         .menu-overlay {
             position: fixed;
             top: 0;
@@ -45,43 +45,43 @@
 
         .menu-card {
             background: #0d2e27;
-            border-radius: 48px;
-            padding: 24px 20px;
+            border-radius: 40px;
+            padding: 20px 18px;
             width: 100%;
-            max-width: 340px;
+            max-width: 320px;
             text-align: center;
             box-shadow: 0 20px 40px rgba(0,0,0,0.5);
             border: 1px solid #ffd96666;
         }
 
         .menu-title {
-            font-size: 1.8rem;
+            font-size: 1.6rem;
             font-weight: 800;
             color: #ffecb3;
-            margin-bottom: 12px;
+            margin-bottom: 10px;
         }
 
         .coins {
             background: #00000066;
             border-radius: 60px;
-            padding: 6px 16px;
+            padding: 5px 14px;
             display: inline-flex;
             align-items: center;
-            gap: 8px;
-            margin-bottom: 20px;
+            gap: 6px;
+            margin-bottom: 16px;
             font-weight: bold;
-            font-size: 1.3rem;
+            font-size: 1.2rem;
             color: #ffd966;
         }
 
         .mode-btn {
             background: #ffcd7e;
             border: none;
-            font-size: 1rem;
+            font-size: 0.95rem;
             font-weight: bold;
-            padding: 10px 16px;
-            border-radius: 60px;
-            margin: 6px 0;
+            padding: 9px 14px;
+            border-radius: 50px;
+            margin: 5px 0;
             width: 100%;
             color: #1f3d36;
             box-shadow: 0 3px 0 #a05e15;
@@ -94,23 +94,23 @@
         .difficulty {
             display: flex;
             gap: 8px;
-            margin: 12px 0;
+            margin: 10px 0;
         }
         .difficulty button {
             flex: 1;
             background: #3f7b6b;
             color: white;
             border: none;
-            padding: 8px 4px;
+            padding: 6px 4px;
             border-radius: 40px;
             font-weight: bold;
-            font-size: 0.8rem;
+            font-size: 0.75rem;
         }
         .difficulty .active-diff { background: #ffb347; color: #1f3d36; box-shadow: inset 0 0 0 2px #fff2c9; }
 
-        .back-btn { background: #5f5f5f; box-shadow: 0 3px 0 #2a2a2a; margin-top: 12px; }
+        .back-btn { background: #5f5f5f; box-shadow: 0 3px 0 #2a2a2a; margin-top: 10px; }
 
-        /* ИГРОВОЙ ЭКРАН */
+        /* ИГРОВОЙ ЭКРАН — компактный, без обрезания */
         .game-wrapper {
             display: flex;
             justify-content: center;
@@ -118,13 +118,13 @@
             width: 100%;
             height: 100%;
             background: #0a1f1a;
-            padding: 8px;
+            padding: 6px;
         }
 
         .game-card {
             background: #0d2e27;
-            border-radius: 28px;
-            padding: 10px;
+            border-radius: 24px;
+            padding: 8px;
             box-shadow: 0 20px 35px rgba(0,0,0,0.5);
             width: 100%;
             max-width: 100%;
@@ -134,7 +134,7 @@
             display: block;
             margin: 0 auto;
             background: #1b4d3e;
-            border-radius: 24px;
+            border-radius: 20px;
             width: 100%;
             height: auto;
             touch-action: none;
@@ -144,56 +144,56 @@
             display: flex;
             justify-content: space-between;
             align-items: center;
-            margin-bottom: 10px;
-            gap: 8px;
+            margin-bottom: 8px;
+            gap: 6px;
             background: #071f1bdd;
-            border-radius: 60px;
-            padding: 5px 12px;
+            border-radius: 50px;
+            padding: 4px 10px;
         }
 
         .score-box {
             text-align: center;
             background: #00000066;
-            padding: 2px 8px;
-            border-radius: 40px;
-            min-width: 55px;
+            padding: 2px 6px;
+            border-radius: 30px;
+            min-width: 50px;
         }
-        .score-value { font-size: 1.4rem; font-weight: 800; color: #fff2c9; line-height: 1.2; }
-        .score-label { font-size: 0.5rem; color: #b9f6e6; }
+        .score-value { font-size: 1.2rem; font-weight: 800; color: #fff2c9; line-height: 1.2; }
+        .score-label { font-size: 0.45rem; color: #b9f6e6; }
 
         .round-info {
             background: #000000aa;
-            padding: 3px 10px;
-            border-radius: 40px;
+            padding: 3px 8px;
+            border-radius: 30px;
             font-weight: bold;
             color: #ffd966;
-            font-size: 0.65rem;
+            font-size: 0.6rem;
             white-space: nowrap;
         }
 
         .reset-btn {
             background: #ffcd7e;
             border: none;
-            font-size: 0.7rem;
-            padding: 5px 12px;
-            border-radius: 40px;
+            font-size: 0.65rem;
+            padding: 4px 10px;
+            border-radius: 30px;
             font-weight: bold;
             cursor: pointer;
             white-space: nowrap;
         }
 
         .instruction {
-            margin-top: 8px;
-            font-size: 0.55rem;
+            margin-top: 6px;
+            font-size: 0.5rem;
             color: #b9f6e6;
             text-align: center;
             background: #071f1b99;
-            border-radius: 40px;
-            padding: 4px 8px;
+            border-radius: 30px;
+            padding: 3px 6px;
         }
 
         @media (orientation: portrait) { .orientation-warning { display: flex; } }
-        .orientation-warning { display: none; position: fixed; top:0; left:0; width:100%; height:100%; background:#000000dd; z-index:200; justify-content:center; align-items:center; color:white; font-size:1rem; flex-direction:column; gap:12px; text-align:center; padding:20px; }
+        .orientation-warning { display: none; position: fixed; top:0; left:0; width:100%; height:100%; background:#000000dd; z-index:200; justify-content:center; align-items:center; color:white; font-size:0.9rem; flex-direction:column; gap:10px; text-align:center; padding:20px; }
     </style>
 </head>
 <body>
@@ -221,26 +221,29 @@
             <div class="score-box"><div class="score-label">🤖 БОТ</div><div class="score-value" id="rightScore">0</div></div>
             <button class="reset-btn" id="inGameReset">НОВЫЙ МАТЧ</button>
         </div>
-        <canvas id="hockeyCanvas" width="950" height="500" style="width:100%; aspect-ratio:950/500"></canvas>
+        <!-- УМЕНЬШЕННАЯ ВЫСОТА ПОЛЯ (450 вместо 500), чтобы точно влезало -->
+        <canvas id="hockeyCanvas" width="900" height="450" style="width:100%; aspect-ratio:900/450"></canvas>
         <div class="instruction" id="gameHint">👆 Нажми на свою клюшку и веди</div>
     </div>
 </div>
 
 <script>
     (function(){
-        // ---------- РАЗМЕРЫ (фиксированные, но canvas масштабируется) ----------
-        const CW = 950, CH = 500;
+        // ---------- РАЗМЕРЫ: УМЕНЬШЕННАЯ ВЫСОТА, ЧТОБЫ НИЗ НЕ ОБРЕЗАЛО ----------
+        const CW = 900;
+        const CH = 450;
+        
         const canvas = document.getElementById('hockeyCanvas');
         canvas.width = CW; canvas.height = CH;
         const ctx = canvas.getContext('2d');
         
-        // ---------- ИГРОВЫЕ ПАРАМЕТРЫ ----------
-        const PADDLE_RADIUS = 42;
-        const PUCK_RADIUS = 18;
+        // ---------- ИГРОВЫЕ ПАРАМЕТРЫ (масштабированы под новую высоту) ----------
+        const PADDLE_RADIUS = 38;      // чуть меньше, чтобы не вылезало
+        const PUCK_RADIUS = 16;
         
         let puck = { x: CW/2, y: CH/2, vx: 0, vy: 0, radius: PUCK_RADIUS };
-        let leftPaddle = { x: 150, y: CH/2, radius: PADDLE_RADIUS };
-        let rightPaddle = { x: CW - 150, y: CH/2, radius: PADDLE_RADIUS };
+        let leftPaddle = { x: 130, y: CH/2, radius: PADDLE_RADIUS };
+        let rightPaddle = { x: CW - 130, y: CH/2, radius: PADDLE_RADIUS };
         
         // Счёт матча
         let leftRounds = 0;
@@ -274,7 +277,7 @@
             let randomY = (Math.random() - 0.5) * 1.2;
             let spd = 5.5;
             puck.vx = Math.cos(angle) * spd;
-            puck.vy = randomY * 3.5;
+            puck.vy = randomY * 3.0;
             let totalSpd = Math.hypot(puck.vx, puck.vy);
             if(totalSpd > MAX_SPEED) {
                 puck.vx = (puck.vx / totalSpd) * MAX_SPEED;
@@ -305,14 +308,14 @@
         let activeDrags = new Map();
         let mouseDragTarget = null;
         
-        // ---------- ФИЗИКА ----------
+        // ---------- ФИЗИКА (подогнана под новую высоту) ----------
         const FRICTION_AIR = 0.992;
         const WALL_BOUNCE_DAMP = 0.98;
         const PADDLE_HIT_FORCE = 2.2;
         const EXTRA_BOOST = 1.25;
-        const MAX_SPEED = 22;
-        const TOP_BOUND = 22, BOTTOM_BOUND = CH - 22, LEFT_BOUND = 22, RIGHT_BOUND = CW - 22;
-        const GOAL_WIDTH = 96, GOAL_Y_START = (CH - GOAL_WIDTH)/2, LEFT_GOAL_X = 8, RIGHT_GOAL_X = CW - 8 - GOAL_WIDTH;
+        const MAX_SPEED = 20;
+        const TOP_BOUND = 18, BOTTOM_BOUND = CH - 18, LEFT_BOUND = 18, RIGHT_BOUND = CW - 18;
+        const GOAL_WIDTH = 86, GOAL_Y_START = (CH - 86)/2, LEFT_GOAL_X = 8, RIGHT_GOAL_X = CW - 8 - 86;
         
         // UI элементы
         const menuOverlay = document.getElementById('menuOverlay');
@@ -331,45 +334,45 @@
             roundTextSpan.innerText = `РАУНД ${currentRoundNumber} / ${MAX_ROUNDS}`;
         }
         
-        function isHitLeft(x,y) { return Math.hypot(x-leftPaddle.x, y-leftPaddle.y) <= leftPaddle.radius+12; }
-        function isHitRight(x,y) { return Math.hypot(x-rightPaddle.x, y-rightPaddle.y) <= rightPaddle.radius+12; }
+        function isHitLeft(x,y) { return Math.hypot(x-leftPaddle.x, y-leftPaddle.y) <= leftPaddle.radius+10; }
+        function isHitRight(x,y) { return Math.hypot(x-rightPaddle.x, y-rightPaddle.y) <= rightPaddle.radius+10; }
         
         function moveLeftTo(x,y){
-            let tx = Math.min((CW/2)-leftPaddle.radius-12, Math.max(LEFT_BOUND+leftPaddle.radius, x));
+            let tx = Math.min((CW/2)-leftPaddle.radius-10, Math.max(LEFT_BOUND+leftPaddle.radius, x));
             let ty = Math.min(BOTTOM_BOUND-leftPaddle.radius, Math.max(TOP_BOUND+leftPaddle.radius, y));
             leftPaddle.x = tx; leftPaddle.y = ty;
         }
         
         function moveRightTo(x,y){
-            let tx = Math.min(RIGHT_BOUND-rightPaddle.radius, Math.max((CW/2)+rightPaddle.radius+12, x));
+            let tx = Math.min(RIGHT_BOUND-rightPaddle.radius, Math.max((CW/2)+rightPaddle.radius+10, x));
             let ty = Math.min(BOTTOM_BOUND-rightPaddle.radius, Math.max(TOP_BOUND+rightPaddle.radius, y));
             rightPaddle.x = tx; rightPaddle.y = ty;
         }
         
-        // Бот
+        // Бот (адаптирован)
         function updateBot(){
             if(gameMode !== 'pve') return;
             if(!gameReady) return;
             if(goalCooldown > 0) return;
             
-            let predictFrames = 6;
+            let predictFrames = 5;
             let futureY = puck.y + puck.vy * predictFrames;
             futureY = Math.min(BOTTOM_BOUND - rightPaddle.radius, Math.max(TOP_BOUND + rightPaddle.radius, futureY));
             let diff = futureY - rightPaddle.y;
             let speed = 0;
             switch(botDifficulty){
-                case 'easy': speed = 5.5; break;
-                case 'medium': speed = 10; break;
-                case 'hard': speed = 16; break;
+                case 'easy': speed = 5; break;
+                case 'medium': speed = 9; break;
+                case 'hard': speed = 14; break;
             }
-            if(botDifficulty === 'hard' && Math.abs(diff) > 35) speed *= 1.3;
+            if(botDifficulty === 'hard' && Math.abs(diff) > 30) speed *= 1.3;
             if(Math.abs(diff) > 2.5){
                 let move = Math.min(Math.abs(diff), speed);
                 rightPaddle.y += Math.sign(diff) * move;
             }
             rightPaddle.y = Math.min(BOTTOM_BOUND - rightPaddle.radius, Math.max(TOP_BOUND + rightPaddle.radius, rightPaddle.y));
             if(botDifficulty === 'easy' && Math.random() < 0.04){
-                rightPaddle.y += (Math.random() - 0.5) * 24;
+                rightPaddle.y += (Math.random() - 0.5) * 20;
                 rightPaddle.y = Math.min(BOTTOM_BOUND - rightPaddle.radius, Math.max(TOP_BOUND + rightPaddle.radius, rightPaddle.y));
             }
         }
@@ -381,8 +384,8 @@
             gameReady = false;
             puck.x = CW/2; puck.y = CH/2;
             puck.vx = 0; puck.vy = 0;
-            leftPaddle.x = 150; leftPaddle.y = CH/2;
-            rightPaddle.x = CW - 150; rightPaddle.y = CH/2;
+            leftPaddle.x = 130; leftPaddle.y = CH/2;
+            rightPaddle.x = CW - 130; rightPaddle.y = CH/2;
             goalCooldown = 0;
             stuckTimer = 0;
             activeDrags.clear();
@@ -394,7 +397,7 @@
             if(gameReady) return;
             gameReady = true;
             let angle = Math.random() * Math.PI * 2;
-            let spd = 4.8;
+            let spd = 4.5;
             puck.vx = Math.cos(angle)*spd;
             puck.vy = Math.sin(angle)*spd;
             stuckTimer = 0;
@@ -444,7 +447,7 @@
             if(goalCooldown>0) return;
             if(!gameReady) return;
             const puckL = puck.x-puck.radius, puckR = puck.x+puck.radius, puckT = puck.y-puck.radius, puckB = puck.y+puck.radius;
-            if(puckL <= LEFT_GOAL_X+18 && puckR >= LEFT_GOAL_X && puckB >= GOAL_Y_START && puckT <= GOAL_Y_START+GOAL_WIDTH){
+            if(puckL <= LEFT_GOAL_X+16 && puckR >= LEFT_GOAL_X && puckB >= GOAL_Y_START && puckT <= GOAL_Y_START+GOAL_WIDTH){
                 awardGoal(false);
                 return;
             }
@@ -488,14 +491,14 @@
             return false;
         }
         
-        // Отрисовка
+        // Отрисовка (адаптирована под новую высоту)
         function draw(){
             ctx.fillStyle = "#c1e2d4"; ctx.fillRect(0,0,CW,CH);
-            ctx.strokeStyle = "#eefaf4"; ctx.lineWidth = 3;
-            ctx.beginPath(); ctx.moveTo(CW/2,10); ctx.lineTo(CW/2,CH-10); ctx.stroke();
-            ctx.beginPath(); ctx.arc(CW/2,CH/2,60,0,Math.PI*2); ctx.stroke();
+            ctx.strokeStyle = "#eefaf4"; ctx.lineWidth = 2;
+            ctx.beginPath(); ctx.moveTo(CW/2,8); ctx.lineTo(CW/2,CH-8); ctx.stroke();
+            ctx.beginPath(); ctx.arc(CW/2,CH/2,50,0,Math.PI*2); ctx.stroke();
             ctx.fillStyle = "#aac7bbaa";
-            ctx.fillRect(LEFT_GOAL_X-6, GOAL_Y_START-6, GOAL_WIDTH+12, GOAL_WIDTH+12);
+            ctx.fillRect(LEFT_GOAL_X-5, GOAL_Y_START-5, GOAL_WIDTH+10, GOAL_WIDTH+10);
             ctx.fillStyle = "#e7cfa1"; ctx.fillRect(LEFT_GOAL_X, GOAL_Y_START, GOAL_WIDTH, GOAL_WIDTH);
             ctx.fillRect(RIGHT_GOAL_X, GOAL_Y_START, GOAL_WIDTH, GOAL_WIDTH);
             ctx.fillStyle = "#c2813a";
@@ -503,20 +506,20 @@
             ctx.fillStyle = "#3f7b6b";
             ctx.beginPath(); ctx.arc(rightPaddle.x, rightPaddle.y, rightPaddle.radius,0,Math.PI*2); ctx.fill();
             if(!gameReady && goalCooldown===0 && gameActive){ ctx.globalAlpha=0.4; ctx.fillStyle="#888"; ctx.beginPath(); ctx.arc(puck.x,puck.y,puck.radius,0,Math.PI*2); ctx.fill(); ctx.globalAlpha=1; }
-            else { ctx.fillStyle = "#111"; ctx.shadowBlur=6; ctx.beginPath(); ctx.arc(puck.x,puck.y,puck.radius,0,Math.PI*2); ctx.fill(); ctx.fillStyle="#aaa"; ctx.beginPath(); ctx.arc(puck.x-3,puck.y-3,puck.radius-7,0,Math.PI*2); ctx.fill(); ctx.shadowBlur=0; }
-            ctx.font = "bold 20px system-ui"; 
+            else { ctx.fillStyle = "#111"; ctx.shadowBlur=5; ctx.beginPath(); ctx.arc(puck.x,puck.y,puck.radius,0,Math.PI*2); ctx.fill(); ctx.fillStyle="#aaa"; ctx.beginPath(); ctx.arc(puck.x-2,puck.y-2,puck.radius-6,0,Math.PI*2); ctx.fill(); ctx.shadowBlur=0; }
+            ctx.font = "bold 18px system-ui"; 
             ctx.fillStyle = leftPlayerReady?"#a5ffb0":"#ffaa88"; 
-            ctx.fillText(leftPlayerReady?"✅":"⭕", leftPaddle.x-30, leftPaddle.y-30);
+            ctx.fillText(leftPlayerReady?"✅":"⭕", leftPaddle.x-25, leftPaddle.y-25);
             if(gameMode==='pvp'){ 
                 ctx.fillStyle = rightPlayerReady?"#a5ffb0":"#ffaa88"; 
-                ctx.fillText(rightPlayerReady?"✅":"⭕", rightPaddle.x+18, rightPaddle.y-30); 
+                ctx.fillText(rightPlayerReady?"✅":"⭕", rightPaddle.x+15, rightPaddle.y-25); 
             } else {
-                ctx.fillStyle = "#ffd966"; ctx.font = "bold 14px monospace"; 
-                ctx.fillText("🤖", rightPaddle.x-8, rightPaddle.y-25);
+                ctx.fillStyle = "#ffd966"; ctx.font = "bold 12px monospace"; 
+                ctx.fillText("🤖", rightPaddle.x-6, rightPaddle.y-22);
             }
         }
         
-        // Обработчики касаний
+        // Обработчики касаний (без изменений, работают)
         function onTouchStart(e){
             e.preventDefault();
             for(let i=0; i<e.touches.length; i++){
